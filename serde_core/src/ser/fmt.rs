@@ -58,11 +58,22 @@ impl<'a> Serializer for &mut fmt::Formatter<'a> {
         serialize_u32: u32,
         serialize_u64: u64,
         serialize_u128: u128,
-        serialize_f32: f32,
-        serialize_f64: f64,
         serialize_char: char,
         serialize_str: &str,
         serialize_unit_struct: &'static str,
+    }
+    #[cfg(not(MODULE))]
+    fmt_primitives! {
+        serialize_f32: f32,
+        serialize_f64: f64,
+    }
+    #[cfg(MODULE)]
+    fn serialize_f32(self, v: f32) -> fmt::Result {
+        Err(fmt::Error)
+    }
+    #[cfg(MODULE)]
+    fn serialize_f64(self, v: f64) -> fmt::Result {
+        Err(fmt::Error)
     }
 
     fn serialize_unit_variant(
