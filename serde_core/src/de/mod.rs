@@ -2358,11 +2358,13 @@ struct WithDecimalPoint(f64);
 
 impl Display for WithDecimalPoint {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        #[cfg(not(MODULE))]
         struct LookForDecimalPoint<'f, 'a> {
             formatter: &'f mut fmt::Formatter<'a>,
             has_decimal_point: bool,
         }
 
+        #[cfg(not(MODULE))]
         impl<'f, 'a> fmt::Write for LookForDecimalPoint<'f, 'a> {
             fn write_str(&mut self, fragment: &str) -> fmt::Result {
                 self.has_decimal_point |= fragment.contains('.');
@@ -2374,7 +2376,9 @@ impl Display for WithDecimalPoint {
                 self.formatter.write_char(ch)
             }
         }
-
+        #[cfg(MODULE)]
+        tri!(write!(writer, "{{formatting floating point numbers is unsupported}}"));
+        #[cfg(not(MODULE))]
         if self.0.is_finite() {
             let mut writer = LookForDecimalPoint {
                 formatter,
